@@ -1,51 +1,86 @@
-import React, { SyntheticEvent } from "react";
-import Wrapper from "./Wrapper"; 
-import { useState } from "react";
-//test
+import React, { SyntheticEvent, useState } from 'react';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import Wrapper from './Wrapper';
 
-const ProductCreate = () => {
+const ProductsCreate: React.FC = () => {
+  const [title, setTitle] = useState<string>('');
+  const [image, setImage] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const navigate: NavigateFunction = useNavigate();
 
-    const [title, setTitle] = useState('');
-    const [image, setImage] = useState('');
+  const submit = async (e: SyntheticEvent) => {
+    e.preventDefault();
 
-    const submit = async (e: SyntheticEvent ) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('image', image);
+    if (!title || !image) {
+      setError('Please provide a title and an image.');
+      return;
+    }
 
-        await fetch('http://localhost:8000/api/products', {
-            method: 'POST',
-           headers: {'content-type': 'application/json'},
-            body: JSON.stringify({
-                title: title,
-                image: image
-            })
-        });
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('image', image);
 
+    try {
+      const response = await fetch('http://localhost:8000/api/products', {
+        method: 'POST',
+        body: formData,
+      });
 
-    return (
-       <Wrapper>
-              <form  onSubmit={submit}>
-                <div className="mb-3">
-                     <label>Title</label>
-                     <input type="text" className="form-control"
-                        onChange={(e) => setTitle(e.target.value)}
-                     />
-                </div>
-                
-                <div className="mb-3">
-                     <label>Image</label>
-                     <input type="file" className="form-control"
-                        onChange={(e) => setImage(e.target.value)}
-                     />
-                </div>
-               
-                <button className="btn btn-outline-secondary">Save</button>
-              </form>
-         </Wrapper>
-    )
-}
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error creating product:', errorData);
+        throw new Error(`Failed to create product: ${errorData.detail || 'Unknown error'}`);
+      }
 
-export default ProductCreate;
+      const data = await response.json();
+      console.log('Product created successfully:', data);
+      navigate('/admin/products');
+    } catch (err) {
+      console.error('Failed to create product:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create product');
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setImage(files[0]);
+    }
+  };
+
+  return (
+    <Wrapper>
+      <h2>Create Product</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <form onSubmit={submit}>
+        <div className="form-group">
+          <label>Title</label>
+          <input
+            type="text"
+            className="form-control"
+            name="title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Image</label>
+          <input
+            type="file"
+            className="form-control"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-outline-secondary mt-3">
+          Save
+        </button>
+      </form>
+    </Wrapper>
+  );
+};
+
+export default ProductsCreate;

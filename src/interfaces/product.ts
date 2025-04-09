@@ -3,5 +3,4 @@ export interface Product {
     title: string;
     image: string;
     likes: number;
- 
-}
+  }

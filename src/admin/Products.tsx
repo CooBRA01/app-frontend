@@ -3,37 +3,47 @@ import { Link } from "react-router-dom";
 import Wrapper from "./Wrapper";
 import { Product } from "../interfaces/product";
 
-const Products = () => {
-  const [products, setProducts] = useState<Product[]>([]); // 🛠 Ensuring type safety
+const BASE_URL = 'http://localhost:8000';  // Adjust if needed
+
+const Products: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/products");
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/api/products`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data: Product[] = await response.json();
         setProducts(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
       }
-    })();
+    };
+    fetchProducts();
   }, []);
 
   const del = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await fetch(`http://localhost:8000/api/products/${id}`, {
+        const response = await fetch(`${BASE_URL}/api/products/${id}`, {
           method: "DELETE",
         });
-
-        setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
-      } catch (error) {
-        console.error("Error deleting product:", error);
+        if (!response.ok) throw new Error('Failed to delete product');
+        setProducts(prev => prev.filter(p => p.id !== id));
+      } catch (err) {
+        console.error("Error deleting product:", err);
+        setError('Failed to delete product');
       }
     }
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <Wrapper>
@@ -44,7 +54,6 @@ const Products = () => {
           </Link>
         </div>
       </div>
-
       <div className="table-responsive">
         <table className="table table-striped table-sm">
           <thead>
@@ -60,9 +69,7 @@ const Products = () => {
             {products.map((p: Product) => (
               <tr key={p.id}>
                 <td>{p.id}</td>
-                <td>
-                  <img src={p.image} height="180"  />
-                </td>
+                <td><img src={`${BASE_URL}${p.image}`} height={180} alt={p.title} /></td>
                 <td>{p.title}</td>
                 <td>{p.likes}</td>
                 <td>
