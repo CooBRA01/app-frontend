@@ -7,17 +7,18 @@ const Main: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         const response = await fetch(`${BASE_URL}/api/products`);
-        if (!response.ok) throw new Error('Failed to fetch products');
+        if (!response.ok) throw new Error('Failed to fetch the goods!');
         const data: Product[] = await response.json();
         setProducts(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        setError(err instanceof Error ? err.message : 'Something’s off—hold tight!');
       } finally {
         setLoading(false);
       }
@@ -31,22 +32,29 @@ const Main: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
+      const data = await response.json();
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error(`Failed to like product ${id}:`, errorData);
-        throw new Error(`Failed to like: ${errorData.message || 'Unknown error'}`);
+        console.log(`Like attempt on ${id}:`, data);
+        setMessage(prev => ({
+          ...prev,
+          [id]: data.message === 'You already liked this product' ? 'Whoa, you’re obsessed! 😍' : 'Oops, like failed! 😢',
+        }));
+        setTimeout(() => setMessage(prev => ({ ...prev, [id]: '' })), 2000);
+        return; // Graceful exit, no throw
       }
       setProducts(prev =>
         prev.map(p => (p.id === id ? { ...p, likes: p.likes + 1 } : p))
       );
+      setMessage(prev => ({ ...prev, [id]: 'Boom! Liked it! 🔥' }));
+      setTimeout(() => setMessage(prev => ({ ...prev, [id]: '' })), 2000);
     } catch (err) {
       console.error(`Failed to like product ${id}:`, err);
-      setError(err instanceof Error ? err.message : 'Failed to like product');
+      setError('Total like meltdown—try again! 😵');
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Loading the party... 🎈</div>;
+  if (error) return <div className="alert alert-danger fade-in">Error: {error}</div>;
 
   return (
     <main role="main">
@@ -62,14 +70,19 @@ const Main: React.FC = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <button
                         type="button"
-                        className="btn btn-sm btn-outline-secondary"
+                        className="btn btn-sm btn-outline-primary"
                         onClick={() => like(p.id)}
                         aria-label={`Like ${p.title}`}
                       >
-                        Like
+                        Smash Like! 💥
                       </button>
                       <small className="text-muted">{p.likes} likes</small>
                     </div>
+                    {message[p.id] && (
+                      <div className={`mt-2 alert fade-in ${message[p.id].includes('Liked') ? 'alert-success' : 'alert-warning'}`}>
+                        {message[p.id]}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

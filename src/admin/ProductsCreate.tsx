@@ -1,11 +1,13 @@
 import React, { SyntheticEvent, useState } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import Wrapper from './Wrapper';
+import '../App.css';
 
 const ProductsCreate: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null); // New state for success
   const navigate: NavigateFunction = useNavigate();
 
   const submit = async (e: SyntheticEvent) => {
@@ -34,7 +36,8 @@ const ProductsCreate: React.FC = () => {
 
       const data = await response.json();
       console.log('Product created successfully:', data);
-      navigate('/admin/products');
+      setSuccess(`Product "${data.title}" created successfully!`); // Success message
+      setTimeout(() => navigate('/admin/products'), 2000); // Redirect after 2s
     } catch (err) {
       console.error('Failed to create product:', err);
       setError(err instanceof Error ? err.message : 'Failed to create product');
@@ -51,6 +54,7 @@ const ProductsCreate: React.FC = () => {
   return (
     <Wrapper>
       <h2>Create Product</h2>
+      {success && <div className="alert alert-success">{success}</div>}
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={submit}>
         <div className="form-group">
