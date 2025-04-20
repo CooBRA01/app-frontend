@@ -15,15 +15,15 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and push Frontend
         run: |
-          docker build -t COOBRA01/app-frontend:latest -f frontend/Dockerfile frontend
+          docker build -t COOBRA01/app-frontend:latest -f ./Dockerfile frontend
           docker push COOBRA01/app-frontend:latest
       - name: Update GitOps
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git clone https://${GITHUB_TOKEN}@github.com/COOBRA01/app-gitops.git
-          cd your-app-gitops
-          sed -i "s|your-app-frontend:.*|app-frontend:latest|" manifests/frontend-deployment.yaml
+          cd app-gitops
+          sed -i "s|app-frontend:.*|app-frontend:latest|" manifests/frontend-deployment.yml
           git add .
           git commit -m "Update frontend to latest"
           git push
