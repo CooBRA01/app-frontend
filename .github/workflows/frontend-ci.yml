@@ -23,6 +23,8 @@ jobs:
         run: |
           git clone https://${GITHUB_TOKEN}@github.com/COOBRA01/app-gitops.git
           cd app-gitops
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
           sed -i "s|app-frontend:.*|app-frontend:latest|" manifests/frontend-deployment.yml
           git add .
           git commit -m "Update frontend to latest"
