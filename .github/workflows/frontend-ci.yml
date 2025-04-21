@@ -15,8 +15,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and push Frontend
         run: |
-          docker build -t COOBRA01/app-frontend:latest -f ./Dockerfile .
-          docker push COOBRA01/app-frontend:latest
+          docker build -t evaander/app-frontend:latest -f ./Dockerfile .
+          docker push evaander/app-frontend:latest
       - name: Update GitOps
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
