@@ -19,7 +19,7 @@ jobs:
           docker push evaander/app-frontend:latest
       - name: Update GitOps
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
           git clone https://${GITHUB_TOKEN}@github.com/COOBRA01/app-gitops.git
           cd app-gitops
