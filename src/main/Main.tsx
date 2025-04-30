@@ -53,7 +53,7 @@ const Main: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading the party... 🎈</div>;
+  if (loading) return <div>Loading the Landing page... 🎈</div>;
   if (error) return <div className="alert alert-danger fade-in">Error: {error}</div>;
 
   return (
