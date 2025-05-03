@@ -15,7 +15,7 @@ const ProductsEdit: React.FC = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://34.170.246.94:8000/api/products/${id}`);
+        const response = await fetch(`http://34.170.246.94:30000/api/products/${id}`);
         if (!response.ok) throw new Error('Failed to fetch product details!');
         const data: Product = await response.json();
         setTitle(data.title);
@@ -87,7 +87,7 @@ const ProductsEdit: React.FC = () => {
         <div className="form-group">
           <label>Current Image</label>
           {currentImage && (
-            <img src={`http://34.170.246.94:8000${currentImage}`} height={180} alt="Current" className="mb-2 d-block" />
+            <img src={`http://34.170.246.94:30000${currentImage}`} height={180} alt="Current" className="mb-2 d-block" />
           )}
           <label>Swap Image (optional)</label>
           <input
