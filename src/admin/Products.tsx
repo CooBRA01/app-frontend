@@ -4,7 +4,7 @@ import Wrapper from "./Wrapper";
 import { Product } from "../interfaces/product";
 import "../App.css";
 
-const BASE_URL = 'http://34.170.246.94:30000';
+const BASE_URL = 'http://34.122.1.199:30000';
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);

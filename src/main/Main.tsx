@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Product } from "../interfaces/product";
 
-const BASE_URL = 'http://34.170.246.94:30000';
+const BASE_URL = 'http://34.122.1.199:30000';
 
 const Main: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +28,7 @@ const Main: React.FC = () => {
 
   const like = async (id: number) => {
     try {
-      const response = await fetch(`http://34.170.246.94:30001/api/products/${id}/like`, {
+      const response = await fetch(`http://34.122.1.199:30001/api/products/${id}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
