@@ -28,7 +28,7 @@ const Main: React.FC = () => {
 
   const like = async (id: number) => {
     try {
-      const response = await fetch(`/api/products/${id}/like`, {
+      const response = await fetch(`/flask-api/products/${id}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
