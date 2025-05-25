@@ -23,7 +23,7 @@ const ProductsCreate: React.FC = () => {
     formData.append('image', image);
 
     try {
-      const response = await fetch('http://34.122.1.199:30000/api/products', {
+      const response = await fetch('/api/products', {
         method: 'POST',
         body: formData,
       });
