@@ -44,6 +44,8 @@ const ProductsCreate: React.FC = () => {
     }
   };
 
+   // useless commennt
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
